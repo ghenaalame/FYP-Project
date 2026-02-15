@@ -55,7 +55,7 @@ app.post('/api/login', async (req,res)=>{
     const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     if(user.rows.length === 0) return res.status(400).json({"Invalid Credentials": "User not found"});
     
-    // compare the password
+    // compare the password (baad ma le2e le user baaml compare ll password)
     const validPassword = await bcrypt.compare(password, user.rows[0].password);
     if(!validPassword) return res.status(400).json({"Invalid Credentials": "Wrong password"});
 
