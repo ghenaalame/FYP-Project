@@ -1,43 +1,76 @@
 import { useState } from "react";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import './Auth.css';
 
-const Login = () =>{
-    const [ credentials , setCredentials] = useState({
-        email : '',
-        password : ''
+const Login = () => {
+    const [credentials, setCredentials] = useState({
+        email: '',
+        password: ''
     });
+
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setCredentials({ ...credentials , [e.target.name] : e.target.value });
+        setCredentials({
+            ...credentials,
+            [e.target.name]: e.target.value
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try{
+
+        try {
             const response = await axios.post(
-                'http://localhost:3000/api/login',credentials
+                'http://localhost:3000/api/login',
+                credentials
             );
-            localStorage.setItem('token', response.data.token); // Save the token for future use
+
+            localStorage.setItem('token', response.data.token);
             alert("Login successful!");
-            navigate('/'); // Redirect to home page after successful login
-        }catch(err){
+            navigate('/');
+        } catch (err) {
             alert("Login failed: " + (err.response?.data?.message || "Server error"));
         }
     };
 
-    return(
-        <div style={{ padding: "20px" }}>
-            <h2>Login to Your Account</h2>
-            <form onSubmit={handleSubmit}>
-                <input name="email" type="email" placeholder="Email" onChange={handleChange} required /><br/><br/>
-                <input name="password" type="password" placeholder="Password" onChange={handleChange} required /><br/><br/>
-                <button type="submit">Login</button>
-            </form>
+    return (
+        <div className="auth-page">
+            <div className="auth-card">
+                <h2>Welcome Back</h2>
+                <p className="auth-subtitle">Login to continue your reservation</p>
+
+                <form className="auth-form" onSubmit={handleSubmit}>
+                    <input
+                        name="email"
+                        type="email"
+                        placeholder="Email address"
+                        value={credentials.email}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <input
+                        name="password"
+                        type="password"
+                        placeholder="Password"
+                        value={credentials.password}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <button className="auth-button" type="submit">
+                        Login
+                    </button>
+                </form>
+
+                <p className="auth-footer">
+                    Don’t have an account? <Link to="/register">Register</Link>
+                </p>
+            </div>
         </div>
     );
-
 };
 
 export default Login;

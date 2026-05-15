@@ -1,78 +1,86 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import './Auth.css';
 
 const Register = () => {
-  const [user, setUser] = useState({
-    name: '',
-    email: '',
-    password: ''
-  });
-
-  const handleChange = (e) => {
-    setUser({
-      ...user,
-      [e.target.name]: e.target.value
+    const [user, setUser] = useState({
+        name: '',
+        email: '',
+        password: ''
     });
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(
-        'http://localhost:3000/api/register',
-        user
-      );
+    const navigate = useNavigate();
 
-      alert("Success: " + response.data.message);
+    const handleChange = (e) => {
+        setUser({
+            ...user,
+            [e.target.name]: e.target.value
+        });
+    };
 
-      // Clear form after success
-      setUser({ name: '', email: '', password: '' });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    } catch (err) {
-      alert(
-        "Error: " + (err.response?.data?.message || "Server error")
-      );
-    }
-  };
+        try {
+            const response = await axios.post(
+                'http://localhost:3000/api/register',
+                user
+            );
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h2>Create an Account</h2>
+            alert("Success: " + response.data.message);
+            setUser({ name: '', email: '', password: '' });
+            navigate('/login');
 
-      <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          placeholder="Name"
-          value={user.name}
-          onChange={handleChange}
-          required
-        />
-        <br /><br />
+        } catch (err) {
+            alert("Error: " + (err.response?.data?.message || "Server error"));
+        }
+    };
 
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={user.email}
-          onChange={handleChange}
-          required
-        />
-        <br /><br />
+    return (
+        <div className="auth-page">
+            <div className="auth-card">
+                <h2>Create Account</h2>
+                <p className="auth-subtitle">Register to book padel courts and chalets</p>
 
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={user.password}
-          onChange={handleChange}
-          required
-        />
-        <br /><br />
+                <form className="auth-form" onSubmit={handleSubmit}>
+                    <input
+                        name="name"
+                        placeholder="Full name"
+                        value={user.name}
+                        onChange={handleChange}
+                        required
+                    />
 
-        <button type="submit">Register</button>
-      </form>
-    </div>
-  );
+                    <input
+                        name="email"
+                        type="email"
+                        placeholder="Email address"
+                        value={user.email}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <input
+                        name="password"
+                        type="password"
+                        placeholder="Password"
+                        value={user.password}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <button className="auth-button" type="submit">
+                        Register
+                    </button>
+                </form>
+
+                <p className="auth-footer">
+                    Already have an account? <Link to="/login">Login</Link>
+                </p>
+            </div>
+        </div>
+    );
 };
 
 export default Register;

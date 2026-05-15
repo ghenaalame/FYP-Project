@@ -1,30 +1,41 @@
-import { BrowserRouter as Router , Routes , Route , Link} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
-// import Home from './pages/Home';
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Layout from './components/Layout';
+
+import Padel from './pages/Padel';
+import PadelDetail from './pages/PadelDetail';
+import PadelBooking from './pages/PadelBooking';
+
+import Chalets from './pages/Chalets';
+import ChaletDetail from './pages/ChaletDetail';
+import ChaletBooking from './pages/ChaletBooking';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <Router>
-      <nav style={{ padding: "10px" , borderBottom: "1px solid #ccc"}}>
-        <Link to="/">Home</Link>
-        <Link to="/register" style={{ margin: "0 10px"}}>Register</Link>
-        <Link to="/login">Login</Link>
-      </nav>
-
       <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Layout />}>
+
+          <Route index element={<Home />} />
+
+          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />
+
+          <Route path="padel" element={<Padel />} />
+          <Route path="padel/:id" element={<PadelDetail />} />
+          <Route path="padel/:id/book" element={<PadelBooking />} />
+
+          <Route path="chalets" element={<Chalets />} />
+          <Route path="chalets/:id" element={<ChaletDetail />} />
+          <Route path="chalets/:id/book" element={<ChaletBooking />} />
+
+        </Route>
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
