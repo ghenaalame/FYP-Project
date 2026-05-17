@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import MyBookings from './pages/MyBookings';
 import Layout from './components/Layout';
 
 import Padel from './pages/Padel';
@@ -23,6 +24,7 @@ function App() {
 
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
+          <Route path="my-bookings" element={<MyBookings />} />
 
           <Route path="padel" element={<Padel />} />
           <Route path="padel/:id" element={<PadelDetail />} />

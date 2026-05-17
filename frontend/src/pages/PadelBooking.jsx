@@ -22,14 +22,29 @@ const PadelBooking = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('Please login before booking');
+            navigate('/login');
+            return;
+        }
+
         try {
-            const response = await axios.post('http://localhost:3000/api/padel-bookings', {
-                user_id: 3,
-                court_id: id,
-                booking_date: booking.booking_date,
-                start_time: booking.start_time,
-                end_time: booking.end_time
-            });
+            const response = await axios.post(
+                'http://localhost:3000/api/padel-bookings',
+                {
+                    court_id: id,
+                    booking_date: booking.booking_date,
+                    start_time: booking.start_time,
+                    end_time: booking.end_time
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
             alert(response.data.message || 'Padel booking successful!');
             navigate('/padel');

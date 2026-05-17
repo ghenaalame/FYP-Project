@@ -21,13 +21,28 @@ const ChaletBooking = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('Please login before booking');
+            navigate('/login');
+            return;
+        }
+
         try {
-            const response = await axios.post('http://localhost:3000/api/chalet-bookings', {
-                user_id: 3,
-                chalet_id: id,
-                check_in_date: booking.check_in_date,
-                check_out_date: booking.check_out_date
-            });
+            const response = await axios.post(
+                'http://localhost:3000/api/chalet-bookings',
+                {
+                    chalet_id: id,
+                    check_in_date: booking.check_in_date,
+                    check_out_date: booking.check_out_date
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
             alert(response.data.message || 'Chalet booking successful!');
             navigate('/chalets');
