@@ -1,12 +1,43 @@
 const router = require('express').Router();
 const pool = require('../config/database');
+const auth = require('../middleware/auth');
+
+// GET logged-in user's padel bookings
+router.get('/my-bookings', auth, async (req, res) => {
+    try {
+        const user_id = req.user.id;
+
+        const result = await pool.query(
+            `SELECT 
+                pb.id,
+                pb.booking_date,
+                pb.start_time,
+                pb.end_time,
+                pb.total_price,
+                pb.status,
+                pc.name AS court_name,
+                pc.location
+             FROM padel_bookings pb
+             JOIN padel_courts pc ON pb.court_id = pc.id
+             WHERE pb.user_id = $1
+             ORDER BY pb.booking_date DESC, pb.start_time DESC`,
+            [user_id]
+        );
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('GET MY PADEL BOOKINGS ERROR:', err);
+        res.status(500).json({ message: 'Server error fetching padel bookings' });
+    }
+});
 
 // POST create padel booking
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
-        const { user_id, court_id, booking_date, start_time, end_time } = req.body;
+        const { court_id, booking_date, start_time, end_time } = req.body;
+        const user_id = req.user.id;
 
-        if (!user_id || !court_id || !booking_date || !start_time || !end_time) {
+        if (!court_id || !booking_date || !start_time || !end_time) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
@@ -14,7 +45,6 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'End time must be after start time' });
         }
 
-        // Check if court exists
         const courtResult = await pool.query(
             'SELECT * FROM padel_courts WHERE id = $1',
             [court_id]
@@ -26,7 +56,6 @@ router.post('/', async (req, res) => {
 
         const court = courtResult.rows[0];
 
-        // Check overlapping booking for same court and same date
         const conflict = await pool.query(
             `SELECT * FROM padel_bookings
              WHERE court_id = $1
@@ -43,14 +72,12 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // Calculate duration in hours
         const start = new Date(`2000-01-01T${start_time}`);
         const end = new Date(`2000-01-01T${end_time}`);
         const durationHours = (end - start) / (1000 * 60 * 60);
 
         const total_price = durationHours * Number(court.price_per_hour);
 
-        // Insert booking
         const newBooking = await pool.query(
             `INSERT INTO padel_bookings
              (user_id, court_id, booking_date, start_time, end_time, total_price, status)
