@@ -100,4 +100,32 @@ router.post('/', auth, async (req, res) => {
     }
 });
 
+// CANCEL logged-in user's chalet booking
+router.put('/:id/cancel', auth, async (req, res) => {
+    try {
+        const user_id = req.user.id;
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `UPDATE chalet_bookings
+             SET status = 'cancelled'
+             WHERE id = $1 AND user_id = $2
+             RETURNING *`,
+            [id, user_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Booking not found or not yours' });
+        }
+
+        res.json({
+            message: 'Chalet booking cancelled successfully',
+            booking: result.rows[0]
+        });
+    } catch (err) {
+        console.error('CANCEL CHALET BOOKING ERROR:', err);
+        res.status(500).json({ message: 'Server error cancelling chalet booking' });
+    }
+});
+
 module.exports = router;

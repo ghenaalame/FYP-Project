@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from 'axios';
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useOutletContext } from "react-router-dom";
 import './Auth.css';
 
 const Login = () => {
@@ -10,6 +10,7 @@ const Login = () => {
     });
 
     const navigate = useNavigate();
+    const { setIsLoggedIn } = useOutletContext();
 
     const handleChange = (e) => {
         setCredentials({
@@ -28,6 +29,8 @@ const Login = () => {
             );
 
             localStorage.setItem('token', response.data.token);
+            setIsLoggedIn(true);
+
             alert("Login successful!");
             navigate('/');
         } catch (err) {

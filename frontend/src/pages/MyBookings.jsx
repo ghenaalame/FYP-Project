@@ -43,6 +43,68 @@ const MyBookings = () => {
         fetchBookings();
     }, []);
 
+    const cancelPadelBooking = async (bookingId) => {
+        const confirmCancel = window.confirm('Are you sure you want to cancel this padel booking?');
+        if (!confirmCancel) return;
+
+        try {
+            const token = localStorage.getItem('token');
+
+            await axios.put(
+                `http://localhost:3000/api/padel-bookings/${bookingId}/cancel`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setPadelBookings(prev =>
+                prev.map(booking =>
+                    booking.id === bookingId
+                        ? { ...booking, status: 'cancelled' }
+                        : booking
+                )
+            );
+
+            alert('Padel booking cancelled successfully');
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to cancel padel booking');
+        }
+    };
+
+    const cancelChaletBooking = async (bookingId) => {
+        const confirmCancel = window.confirm('Are you sure you want to cancel this chalet booking?');
+        if (!confirmCancel) return;
+
+        try {
+            const token = localStorage.getItem('token');
+
+            await axios.put(
+                `http://localhost:3000/api/chalet-bookings/${bookingId}/cancel`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setChaletBookings(prev =>
+                prev.map(booking =>
+                    booking.id === bookingId
+                        ? { ...booking, status: 'cancelled' }
+                        : booking
+                )
+            );
+
+            alert('Chalet booking cancelled successfully');
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to cancel chalet booking');
+        }
+    };
+
     if (loading) {
         return <p style={{ textAlign: 'center', marginTop: '40px' }}>Loading bookings...</p>;
     }
@@ -80,7 +142,19 @@ const MyBookings = () => {
                                 <p><strong>Date:</strong> {formatDate(booking.booking_date)}</p>
                                 <p><strong>Time:</strong> {booking.start_time} - {booking.end_time}</p>
                                 <p><strong>Total:</strong> ${booking.total_price}</p>
-                                <span style={statusStyle}>{booking.status}</span>
+
+                                <span style={getStatusStyle(booking.status)}>
+                                    {booking.status}
+                                </span>
+
+                                {booking.status === 'confirmed' && (
+                                    <button
+                                        onClick={() => cancelPadelBooking(booking.id)}
+                                        style={cancelButtonStyle}
+                                    >
+                                        Cancel Booking
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -103,7 +177,19 @@ const MyBookings = () => {
                                 <p><strong>Check-out:</strong> {formatDate(booking.check_out_date)}</p>
                                 <p><strong>Nights:</strong> {booking.total_nights}</p>
                                 <p><strong>Total:</strong> ${booking.total_price}</p>
-                                <span style={statusStyle}>{booking.status}</span>
+
+                                <span style={getStatusStyle(booking.status)}>
+                                    {booking.status}
+                                </span>
+
+                                {booking.status === 'confirmed' && (
+                                    <button
+                                        onClick={() => cancelChaletBooking(booking.id)}
+                                        style={cancelButtonStyle}
+                                    >
+                                        Cancel Booking
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -115,6 +201,18 @@ const MyBookings = () => {
 
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
+};
+
+const getStatusStyle = (status) => {
+    if (status === 'cancelled') {
+        return {
+            ...statusStyle,
+            backgroundColor: '#fee2e2',
+            color: '#991b1b'
+        };
+    }
+
+    return statusStyle;
 };
 
 const pageStyle = {
@@ -165,6 +263,19 @@ const statusStyle = {
     color: '#166534',
     borderRadius: '20px',
     fontSize: '13px',
+    fontWeight: 'bold'
+};
+
+const cancelButtonStyle = {
+    display: 'block',
+    marginTop: '15px',
+    width: '100%',
+    padding: '10px',
+    backgroundColor: '#ef4444',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
     fontWeight: 'bold'
 };
 
