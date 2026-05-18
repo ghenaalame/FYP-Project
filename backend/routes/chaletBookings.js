@@ -32,6 +32,27 @@ router.get('/my-bookings', auth, async (req, res) => {
     }
 });
 
+// GET confirmed bookings for one chalet
+router.get('/chalet/:chaletId/unavailable', async (req, res) => {
+    try {
+        const { chaletId } = req.params;
+
+        const result = await pool.query(
+            `SELECT id, check_in_date, check_out_date, status
+             FROM chalet_bookings
+             WHERE chalet_id = $1
+             AND status = 'confirmed'
+             ORDER BY check_in_date ASC`,
+            [chaletId]
+        );
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('GET CHALET UNAVAILABLE DATES ERROR:', err);
+        res.status(500).json({ message: 'Server error fetching unavailable chalet dates' });
+    }
+});
+
 // POST create chalet booking
 router.post('/', auth, async (req, res) => {
     try {

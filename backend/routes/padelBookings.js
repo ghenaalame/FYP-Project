@@ -31,6 +31,28 @@ router.get('/my-bookings', auth, async (req, res) => {
     }
 });
 
+// GET confirmed bookings for one padel court on one date
+router.get('/court/:courtId/date/:bookingDate', async (req, res) => {
+    try {
+        const { courtId, bookingDate } = req.params;
+
+        const result = await pool.query(
+            `SELECT id, booking_date, start_time, end_time, status
+             FROM padel_bookings
+             WHERE court_id = $1
+             AND booking_date = $2::date
+             AND status = 'confirmed'
+             ORDER BY start_time ASC`,
+            [courtId, bookingDate]
+        );
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error('GET PADEL UNAVAILABLE TIMES ERROR:', err);
+        res.status(500).json({ message: 'Server error fetching unavailable times' });
+    }
+});
+
 // POST create padel booking
 router.post('/', auth, async (req, res) => {
     try {

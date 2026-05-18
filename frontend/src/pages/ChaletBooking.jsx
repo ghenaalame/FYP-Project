@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -11,6 +11,24 @@ const ChaletBooking = () => {
         check_out_date: ''
     });
 
+    const [unavailableDates, setUnavailableDates] = useState([]);
+
+    useEffect(() => {
+        const fetchUnavailableDates = async () => {
+            try {
+                const response = await axios.get(
+                    `http://localhost:3000/api/chalet-bookings/chalet/${id}/unavailable`
+                );
+
+                setUnavailableDates(response.data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchUnavailableDates();
+    }, [id]);
+
     const handleChange = (e) => {
         setBooking({
             ...booking,
@@ -18,8 +36,24 @@ const ChaletBooking = () => {
         });
     };
 
+    const getTodayDate = () => {
+        return new Date().toISOString().split('T')[0];
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const today = getTodayDate();
+
+        if (booking.check_in_date < today) {
+            alert('Check-in date cannot be in the past');
+            return;
+        }
+
+        if (booking.check_out_date <= booking.check_in_date) {
+            alert('Check-out date must be after check-in date');
+            return;
+        }
 
         const token = localStorage.getItem('token');
 
@@ -63,6 +97,22 @@ const ChaletBooking = () => {
                     <p>Select your check-in and check-out dates</p>
                 </div>
 
+                <div style={unavailableBoxStyle}>
+                    <strong>Unavailable date ranges:</strong>
+
+                    {unavailableDates.length === 0 ? (
+                        <p style={availableTextStyle}>No bookings for this chalet yet.</p>
+                    ) : (
+                        <ul style={dateListStyle}>
+                            {unavailableDates.map(date => (
+                                <li key={date.id}>
+                                    {formatDate(date.check_in_date)} → {formatDate(date.check_out_date)}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
                 <form onSubmit={handleSubmit} style={formStyle}>
                     <div>
                         <label style={labelStyle}>Check-in Date</label>
@@ -71,6 +121,7 @@ const ChaletBooking = () => {
                             name="check_in_date"
                             value={booking.check_in_date}
                             onChange={handleChange}
+                            min={getTodayDate()}
                             required
                             style={inputStyle}
                         />
@@ -83,13 +134,14 @@ const ChaletBooking = () => {
                             name="check_out_date"
                             value={booking.check_out_date}
                             onChange={handleChange}
+                            min={booking.check_in_date || getTodayDate()}
                             required
                             style={inputStyle}
                         />
                     </div>
 
                     <div style={infoBoxStyle}>
-                        <strong>Note:</strong> The system will automatically prevent double bookings for the same chalet and overlapping dates.
+                        <strong>Note:</strong> The system will automatically prevent booking a chalet during unavailable date ranges.
                     </div>
 
                     <button type="submit" style={buttonStyle}>
@@ -101,9 +153,13 @@ const ChaletBooking = () => {
     );
 };
 
+const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+};
+
 const pageStyle = {
     minHeight: 'calc(100vh - 70px)',
-    background: 'linear-gradient(135deg, #fff7df, #f8fbff)',
+    background: 'linear-gradient(135deg, #eef6ff, #fff8e7)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -122,7 +178,7 @@ const cardStyle = {
 const backButton = {
     background: 'none',
     border: 'none',
-    color: '#d4af37',
+    color: '#3498db',
     cursor: 'pointer',
     fontWeight: 'bold',
     marginBottom: '20px',
@@ -131,7 +187,26 @@ const backButton = {
 
 const headerStyle = {
     textAlign: 'center',
-    marginBottom: '28px'
+    marginBottom: '24px'
+};
+
+const unavailableBoxStyle = {
+    backgroundColor: '#fef2f2',
+    color: '#991b1b',
+    padding: '14px',
+    borderRadius: '10px',
+    fontSize: '14px',
+    marginBottom: '22px'
+};
+
+const availableTextStyle = {
+    margin: '8px 0 0 0',
+    color: '#166534'
+};
+
+const dateListStyle = {
+    margin: '8px 0 0 18px',
+    padding: 0
 };
 
 const formStyle = {
@@ -157,8 +232,8 @@ const inputStyle = {
 };
 
 const infoBoxStyle = {
-    backgroundColor: '#fffbeb',
-    color: '#92400e',
+    backgroundColor: '#eff6ff',
+    color: '#1e40af',
     padding: '14px',
     borderRadius: '10px',
     fontSize: '14px',
@@ -168,7 +243,7 @@ const infoBoxStyle = {
 const buttonStyle = {
     width: '100%',
     padding: '14px',
-    backgroundColor: '#d4af37',
+    backgroundColor: '#3498db',
     color: 'white',
     border: 'none',
     borderRadius: '10px',

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -12,6 +12,29 @@ const PadelBooking = () => {
         end_time: ''
     });
 
+    const [unavailableSlots, setUnavailableSlots] = useState([]);
+
+    useEffect(() => {
+        const fetchUnavailableSlots = async () => {
+            if (!booking.booking_date) {
+                setUnavailableSlots([]);
+                return;
+            }
+
+            try {
+                const response = await axios.get(
+                    `http://localhost:3000/api/padel-bookings/court/${id}/date/${booking.booking_date}`
+                );
+
+                setUnavailableSlots(response.data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchUnavailableSlots();
+    }, [booking.booking_date, id]);
+
     const handleChange = (e) => {
         setBooking({
             ...booking,
@@ -19,8 +42,24 @@ const PadelBooking = () => {
         });
     };
 
+    const getTodayDate = () => {
+        return new Date().toISOString().split('T')[0];
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const today = getTodayDate();
+
+        if (booking.booking_date < today) {
+            alert('You cannot book a date in the past');
+            return;
+        }
+
+        if (booking.start_time >= booking.end_time) {
+            alert('End time must be after start time');
+            return;
+        }
 
         const token = localStorage.getItem('token');
 
@@ -73,9 +112,28 @@ const PadelBooking = () => {
                             name="booking_date"
                             value={booking.booking_date}
                             onChange={handleChange}
+                            min={getTodayDate()}
                             required
                             style={inputStyle}
                         />
+
+                        {booking.booking_date && (
+                            <div style={slotsBoxStyle}>
+                                <strong>Unavailable slots:</strong>
+
+                                {unavailableSlots.length === 0 ? (
+                                    <p style={availableTextStyle}>No bookings on this date yet.</p>
+                                ) : (
+                                    <ul style={slotsListStyle}>
+                                        {unavailableSlots.map(slot => (
+                                            <li key={slot.id}>
+                                                {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     <div style={timeGridStyle}>
@@ -115,6 +173,10 @@ const PadelBooking = () => {
             </div>
         </div>
     );
+};
+
+const formatTime = (time) => {
+    return time?.slice(0, 5);
 };
 
 const pageStyle = {
@@ -176,6 +238,25 @@ const inputStyle = {
     border: '1px solid #d1d5db',
     fontSize: '15px',
     outline: 'none'
+};
+
+const slotsBoxStyle = {
+    marginTop: '12px',
+    backgroundColor: '#fef2f2',
+    color: '#991b1b',
+    padding: '12px',
+    borderRadius: '10px',
+    fontSize: '14px'
+};
+
+const availableTextStyle = {
+    margin: '8px 0 0 0',
+    color: '#166534'
+};
+
+const slotsListStyle = {
+    margin: '8px 0 0 18px',
+    padding: 0
 };
 
 const infoBoxStyle = {
