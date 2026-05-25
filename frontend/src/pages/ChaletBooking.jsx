@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { isTokenValid } from '../utils/auth';
 
 const ChaletBooking = () => {
     const { id } = useParams();
@@ -57,7 +58,7 @@ const ChaletBooking = () => {
 
         const token = localStorage.getItem('token');
 
-        if (!token) {
+        if (!token || !isTokenValid()) {
             alert('Please login before booking');
             navigate('/login');
             return;

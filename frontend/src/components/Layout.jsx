@@ -1,9 +1,14 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { isTokenValid } from "../utils/auth";
 
 const Layout = () => {
     const navigate = useNavigate();
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+    const [isLoggedIn, setIsLoggedIn] = useState(isTokenValid());
+
+    useEffect(() => {
+        setIsLoggedIn(isTokenValid());
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
