@@ -5,6 +5,7 @@ import padelPhoto from '../assets/padel/padel_photo.jpg';
 
 const Padel = () => {
     const [courts, setCourts] = useState([]);
+    const [showMenu, setShowMenu] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -13,28 +14,114 @@ const Padel = () => {
             .catch(err => console.error(err));
     }, []);
 
+    const cafeMenu = [
+        {
+            category: '☕ Coffee',
+            items: [
+                { name: 'Espresso', price: '$2' },
+                { name: 'Cappuccino', price: '$3' },
+                { name: 'Frappe', price: '$4' }
+            ]
+        },
+        {
+            category: '🥤 Drinks',
+            items: [
+                { name: 'Water', price: '$1' },
+                { name: 'Energy Drink', price: '$3' },
+                { name: 'Fresh Juice', price: '$4' }
+            ]
+        },
+        {
+            category: '🥪 Snacks',
+            items: [
+                { name: 'Chicken Sandwich', price: '$5' },
+                { name: 'Protein Bar', price: '$3' },
+                { name: 'Chips', price: '$2' }
+            ]
+        },
+        {
+            category: '💪 Protein',
+            items: [
+                { name: 'Protein Shake', price: '$5' },
+                { name: 'Protein Cookie', price: '$4' }
+            ]
+        }
+    ];
+
     return (
         <div style={pageStyle}>
             <section style={heroStyle}>
                 <p style={labelStyle}>Padel Reservations</p>
-                <h1 style={titleStyle}>Choose Your Padel Court</h1>
+
+                <h1 style={titleStyle}>
+                    Choose Your Padel Court
+                </h1>
+
                 <p style={subtitleStyle}>
                     Browse available courts, view details, check unavailable time slots,
                     and reserve your preferred court easily.
                 </p>
+
+                <button
+                    onClick={() => setShowMenu(!showMenu)}
+                    style={menuButtonStyle}
+                >
+                    {showMenu ? 'Hide Café Menu' : 'View Café Menu'}
+                </button>
             </section>
+
+            {showMenu && (
+                <section style={menuSectionStyle}>
+                    <div style={menuHeaderStyle}>
+                        <h2 style={{ marginBottom: '8px', color: '#92400e' }}>
+                            ☕ Padel Café Menu
+                        </h2>
+
+                        <p style={{ color: '#78350f', margin: 0 }}>
+                            Refreshments, snacks, and protein options are available at the café counter.
+                        </p>
+                    </div>
+
+                    <div style={menuGridStyle}>
+                        {cafeMenu.map((section, index) => (
+                            <div key={index} style={menuCardStyle}>
+                                <h3>{section.category}</h3>
+
+                                {section.items.map((item, itemIndex) => (
+                                    <div key={itemIndex} style={menuItemStyle}>
+                                        <span>{item.name}</span>
+                                        <strong>{item.price}</strong>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             <div style={gridStyle}>
                 {courts.map(court => (
                     <div key={court.id} style={cardStyle}>
-                        <img src={padelPhoto} alt={court.name} style={imageStyle} />
+                        <img
+                            src={padelPhoto}
+                            alt={court.name}
+                            style={imageStyle}
+                        />
 
                         <div style={cardContentStyle}>
                             <span style={badgeStyle}>🎾 Court</span>
-                            <h3 style={courtNameStyle}>{court.name}</h3>
 
-                            <p style={infoStyle}>📍 {court.location}</p>
-                            <p style={priceStyle}>${court.price_per_hour} / hour</p>
+                            <h3 style={courtNameStyle}>
+                                {court.name}
+                            </h3>
+
+                            <p style={infoStyle}>
+                                📍 {court.location}
+                            </p>
+
+                            <p style={priceStyle}>
+                                ${court.price_per_hour} / hour
+                            </p>
 
                             <button
                                 onClick={() => navigate(`/padel/${court.id}`)}
@@ -89,8 +176,57 @@ const subtitleStyle = {
     lineHeight: '1.6',
     fontSize: '15px',
     maxWidth: '580px',
-    margin: '0 auto'
+    margin: '0 auto 20px auto'
 };
+
+const menuButtonStyle = {
+    padding: '12px 20px',
+    backgroundColor: '#111827',
+    color: 'white',
+    border: 'none',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontWeight: 'bold'
+};
+
+const menuSectionStyle = {
+    maxWidth: '1150px',
+    margin: '0 auto 30px auto',
+    background: 'linear-gradient(135deg, #ecfdf5, #ffffff)',
+    padding: '30px',
+    borderRadius: '24px',
+    boxShadow: '0 14px 35px rgba(15, 118, 110, 0.10)',
+    border: '1px solid #bbf7d0'
+};
+
+const menuHeaderStyle = {
+    textAlign: 'center',
+    marginBottom: '24px'
+};
+
+const menuGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+    gap: '20px'
+};
+
+const menuCardStyle = {
+    backgroundColor: 'white',
+    padding: '22px',
+    borderRadius: '18px',
+    border: '1px solid #bbf7d0',
+    boxShadow: '0 8px 20px rgba(0,0,0,0.05)'
+};
+
+const menuItemStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '12px',
+    padding: '11px 0',
+    borderBottom: '1px dashed #86efac',
+    color: '#374151',
+    fontSize: '15px'
+};;
 
 const gridStyle = {
     display: 'grid',
