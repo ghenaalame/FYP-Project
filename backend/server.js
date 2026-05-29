@@ -9,6 +9,7 @@ const padelRoutes = require('./routes/padel');
 const chaletRoutes = require('./routes/chalets');
 const padelBookingRoutes = require('./routes/padelBookings');
 const chaletBookingRoutes = require('./routes/chaletBookings');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/api/padel', padelRoutes);
 app.use('/api/chalets', chaletRoutes);
 app.use('/api/padel-bookings', padelBookingRoutes);
 app.use('/api/chalet-bookings', chaletBookingRoutes);
+app.use('/api/admin', adminRoutes);
 
 const port = process.env.PORT || 3000;
 
@@ -77,7 +79,10 @@ app.post('/api/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.rows[0].id },
+      {
+        id: user.rows[0].id,
+        role: user.rows[0].role
+      },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );

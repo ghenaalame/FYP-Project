@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
 import { useNavigate, Link, useOutletContext } from "react-router-dom";
+import { getUserRole } from '../utils/auth';
 import './Auth.css';
 
 const Login = () => {
@@ -10,7 +11,7 @@ const Login = () => {
     });
 
     const navigate = useNavigate();
-    const { setIsLoggedIn } = useOutletContext();
+    const { setIsLoggedIn, setRole } = useOutletContext();
 
     const handleChange = (e) => {
         setCredentials({
@@ -29,7 +30,9 @@ const Login = () => {
             );
 
             localStorage.setItem('token', response.data.token);
+
             setIsLoggedIn(true);
+            setRole(getUserRole());
 
             alert("Login successful!");
             navigate('/');

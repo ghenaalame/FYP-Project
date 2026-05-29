@@ -1,18 +1,21 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { isTokenValid } from "../utils/auth";
+import { isTokenValid, getUserRole } from "../utils/auth";
 
 const Layout = () => {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(isTokenValid());
+    const [role, setRole] = useState(getUserRole());
 
     useEffect(() => {
         setIsLoggedIn(isTokenValid());
+        setRole(getUserRole());
     }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
+        setRole(null);
         alert('Logged out successfully');
         navigate('/login');
     };
@@ -27,6 +30,10 @@ const Layout = () => {
 
                     {isLoggedIn && (
                         <Link to="/my-bookings" style={linkStyle}>My Bookings</Link>
+                    )}
+
+                    {isLoggedIn && role === 'admin' && (
+                        <Link to="/admin/bookings" style={adminLinkStyle}>Admin Bookings</Link>
                     )}
                 </div>
 
@@ -45,7 +52,7 @@ const Layout = () => {
             </nav>
 
             <main style={{ padding: '20px' }}>
-                <Outlet context={{ isLoggedIn, setIsLoggedIn }} />
+                <Outlet context={{ isLoggedIn, setIsLoggedIn, setRole }} />
             </main>
         </div>
     );
@@ -79,6 +86,15 @@ const linkStyle = {
     color: '#1f2937',
     textDecoration: 'none',
     fontWeight: '600'
+};
+
+const adminLinkStyle = {
+    color: '#7c2d12',
+    backgroundColor: '#ffedd5',
+    textDecoration: 'none',
+    fontWeight: '700',
+    padding: '7px 12px',
+    borderRadius: '8px'
 };
 
 const loginButtonStyle = {

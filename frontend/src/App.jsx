@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import MyBookings from './pages/MyBookings';
+import AdminBookings from './pages/AdminBookings';
 import Layout from './components/Layout';
 
 import Padel from './pages/Padel';
@@ -25,6 +26,7 @@ function App() {
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
           <Route path="my-bookings" element={<MyBookings />} />
+          <Route path="admin/bookings" element={<AdminBookings />} />
 
           <Route path="padel" element={<Padel />} />
           <Route path="padel/:id" element={<PadelDetail />} />

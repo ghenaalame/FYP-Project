@@ -3,9 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 export const isTokenValid = () => {
     const token = localStorage.getItem('token');
 
-    if (!token) {
-        return false;
-    }
+    if (!token) return false;
 
     try {
         const decoded = jwtDecode(token);
@@ -20,5 +18,18 @@ export const isTokenValid = () => {
     } catch (err) {
         localStorage.removeItem('token');
         return false;
+    }
+};
+
+export const getUserRole = () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) return null;
+
+    try {
+        const decoded = jwtDecode(token);
+        return decoded.role;
+    } catch (err) {
+        return null;
     }
 };
