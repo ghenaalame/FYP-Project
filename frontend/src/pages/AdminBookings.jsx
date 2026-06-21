@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { isTokenValid } from '../utils/auth';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const AdminBookings = () => {
     const [padelBookings, setPadelBookings] = useState([]);
     const [chaletBookings, setChaletBookings] = useState([]);
@@ -25,12 +27,12 @@ const AdminBookings = () => {
                 };
 
                 const padelRes = await axios.get(
-                    'http://localhost:3000/api/admin/padel-bookings',
+                    `${API_URL}/api/admin/padel-bookings`,
                     { headers }
                 );
 
                 const chaletRes = await axios.get(
-                    'http://localhost:3000/api/admin/chalet-bookings',
+                    `${API_URL}/api/admin/chalet-bookings`,
                     { headers }
                 );
 
@@ -55,7 +57,7 @@ const AdminBookings = () => {
             const token = localStorage.getItem('token');
 
             await axios.put(
-                `http://localhost:3000/api/admin/padel-bookings/${bookingId}/cancel`,
+                `${API_URL}/api/admin/padel-bookings/${bookingId}/cancel`,
                 {},
                 {
                     headers: {
@@ -86,7 +88,7 @@ const AdminBookings = () => {
             const token = localStorage.getItem('token');
 
             await axios.put(
-                `http://localhost:3000/api/admin/chalet-bookings/${bookingId}/cancel`,
+                `${API_URL}/api/admin/chalet-bookings/${bookingId}/cancel`,
                 {},
                 {
                     headers: {

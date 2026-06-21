@@ -5,12 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import proChaletPhoto from '../assets/chalet/chalet_pros.jpg';
 import modernChaletPhoto from '../assets/chalet/modern_chalet.png';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Chalets = () => {
     const [chalets, setChalets] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/chalets')
+        axios.get(`${API_URL}/api/chalets`)
             .then(res => setChalets(res.data))
             .catch(err => console.error(err));
     }, []);

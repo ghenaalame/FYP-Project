@@ -4,6 +4,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { isTokenValid } from '../utils/auth';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ChaletBooking = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -19,7 +21,7 @@ const ChaletBooking = () => {
         const fetchUnavailableDates = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:3000/api/chalet-bookings/chalet/${id}/unavailable`
+                    `${API_URL}/api/chalet-bookings/chalet/${id}/unavailable`
                 );
 
                 setUnavailableDates(response.data);
@@ -67,7 +69,7 @@ const ChaletBooking = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:3000/api/chalet-bookings',
+                `${API_URL}/api/chalet-bookings`,
                 {
                     chalet_id: id,
                     check_in_date: booking.check_in_date,

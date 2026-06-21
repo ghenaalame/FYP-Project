@@ -4,6 +4,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { isTokenValid } from '../utils/auth';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const PadelBooking = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -25,7 +27,7 @@ const PadelBooking = () => {
 
             try {
                 const response = await axios.get(
-                    `http://localhost:3000/api/padel-bookings/court/${id}/date/${booking.booking_date}`
+                    `${API_URL}/api/padel-bookings/court/${id}/date/${booking.booking_date}`
                 );
 
                 setUnavailableSlots(response.data);
@@ -73,7 +75,7 @@ const PadelBooking = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:3000/api/padel-bookings',
+                `${API_URL}/api/padel-bookings`,
                 {
                     court_id: id,
                     booking_date: booking.booking_date,

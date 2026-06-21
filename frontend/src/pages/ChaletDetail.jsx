@@ -5,13 +5,15 @@ import axios from 'axios';
 import proChaletPhoto from '../assets/chalet/chalet_pros.jpg';
 import modernChaletPhoto from '../assets/chalet/modern_chalet.png';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ChaletDetail = () => {
     const { id } = useParams();
     const [chalet, setChalet] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/api/chalets/${id}`)
+        axios.get(`${API_URL}/api/chalets/${id}`)
             .then(res => setChalet(res.data))
             .catch(err => console.error(err));
     }, [id]);
@@ -87,7 +89,6 @@ const ChaletDetail = () => {
                             </div>
                         </div>
 
-                        
                         <button
                             onClick={() => navigate(`/chalets/${id}/book`)}
                             style={{
@@ -199,23 +200,6 @@ const featureBoxStyle = {
     padding: '14px',
     borderRadius: '12px',
     border: '1px solid #e5e7eb'
-};
-
-const layoutBoxStyle = {
-    backgroundColor: '#fff',
-    border: '1px solid #e5e7eb',
-    borderRadius: '14px',
-    padding: '18px',
-    marginBottom: '20px'
-};
-
-const layoutItemStyle = {
-    backgroundColor: '#f9fafb',
-    padding: '14px',
-    borderRadius: '12px',
-    marginTop: '12px',
-    lineHeight: '1.6',
-    color: '#4b5563'
 };
 
 const bookButtonStyle = {

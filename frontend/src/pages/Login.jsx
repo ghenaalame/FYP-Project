@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import { getUserRole } from '../utils/auth';
 import './Auth.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Login = () => {
     const [credentials, setCredentials] = useState({
         email: '',
@@ -26,7 +28,7 @@ const Login = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:3000/api/login',
+                `${API_URL}/api/login`,
                 credentials
             );
 

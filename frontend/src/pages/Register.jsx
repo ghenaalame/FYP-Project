@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import './Auth.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Register = () => {
     const [user, setUser] = useState({
         name: '',
@@ -26,7 +28,7 @@ const Register = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:3000/api/register',
+                `${API_URL}/api/register`,
                 user
             );
 

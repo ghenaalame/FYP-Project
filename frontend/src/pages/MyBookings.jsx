@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const MyBookings = () => {
     const [padelBookings, setPadelBookings] = useState([]);
     const [chaletBookings, setChaletBookings] = useState([]);
@@ -22,12 +24,12 @@ const MyBookings = () => {
                 };
 
                 const padelRes = await axios.get(
-                    'http://localhost:3000/api/padel-bookings/my-bookings',
+                    `${API_URL}/api/padel-bookings/my-bookings`,
                     { headers }
                 );
 
                 const chaletRes = await axios.get(
-                    'http://localhost:3000/api/chalet-bookings/my-bookings',
+                    `${API_URL}/api/chalet-bookings/my-bookings`,
                     { headers }
                 );
 
@@ -52,7 +54,7 @@ const MyBookings = () => {
             const token = localStorage.getItem('token');
 
             await axios.put(
-                `http://localhost:3000/api/padel-bookings/${bookingId}/cancel`,
+                `${API_URL}/api/padel-bookings/${bookingId}/cancel`,
                 {},
                 {
                     headers: {
@@ -79,7 +81,7 @@ const MyBookings = () => {
             const token = localStorage.getItem('token');
 
             await axios.put(
-                `http://localhost:3000/api/chalet-bookings/${bookingId}/cancel`,
+                `${API_URL}/api/chalet-bookings/${bookingId}/cancel`,
                 {},
                 {
                     headers: {

@@ -3,13 +3,15 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import padelPhoto from '../assets/padel/padel_photo.jpg';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Padel = () => {
     const [courts, setCourts] = useState([]);
     const [showMenu, setShowMenu] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/padel')
+        axios.get(`${API_URL}/api/padel`)
             .then(res => setCourts(res.data))
             .catch(err => console.error(err));
     }, []);
@@ -59,7 +61,6 @@ const Padel = () => {
                     Browse available courts, view details, check unavailable time slots,
                     and reserve your preferred court easily.
                 </p>
-
 
                 <button
                     onClick={() => setShowMenu(!showMenu)}
@@ -175,25 +176,6 @@ const subtitleStyle = {
     fontSize: '15px',
     maxWidth: '580px',
     margin: '0 auto 20px auto'
-};
-
-const pricingBoxStyle = {
-    backgroundColor: '#ecfdf5',
-    border: '1px solid #a7f3d0',
-    padding: '15px',
-    borderRadius: '14px',
-    margin: '0 auto 20px auto',
-    maxWidth: '520px',
-    color: '#065f46',
-    textAlign: 'left'
-};
-
-const pricingRowStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '12px',
-    marginBottom: '8px',
-    fontSize: '15px'
 };
 
 const menuButtonStyle = {

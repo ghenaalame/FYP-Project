@@ -4,13 +4,15 @@ import axios from 'axios';
 
 import padelPhoto from '../assets/padel/padel_photo.jpg';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const PadelDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [court, setCourt] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/api/padel/${id}`)
+        axios.get(`${API_URL}/api/padel/${id}`)
             .then(res => setCourt(res.data))
             .catch(err => console.log(err));
     }, [id]);
@@ -92,6 +94,7 @@ const PadelDetail = () => {
         </div>
     );
 };
+
 
 const pageStyle = {
     padding: '40px',
