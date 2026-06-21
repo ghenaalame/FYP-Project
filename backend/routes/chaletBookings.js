@@ -2,7 +2,8 @@ const router = require('express').Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
-// GET logged-in user's chalet bookings
+
+// GET logged-in user's active/upcoming chalet bookings
 router.get('/my-bookings', auth, async (req, res) => {
     try {
         const user_id = req.user.id;
@@ -21,7 +22,9 @@ router.get('/my-bookings', auth, async (req, res) => {
              FROM chalet_bookings cb
              JOIN chalets c ON cb.chalet_id = c.id
              WHERE cb.user_id = $1
-             ORDER BY cb.check_in_date DESC`,
+             AND cb.status = 'confirmed'
+             AND cb.check_out_date >= CURRENT_DATE
+             ORDER BY cb.check_in_date ASC`,
             [user_id]
         );
 

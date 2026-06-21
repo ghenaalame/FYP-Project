@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-import proChaletPhoto from '../assets/chalet/pro_chalet.jpg';
+import proChaletPhoto from '../assets/chalet/chalet_pros.jpg';
 import modernChaletPhoto from '../assets/chalet/modern_chalet.png';
 
 const Chalets = () => {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
 import { useNavigate, Link, useOutletContext } from "react-router-dom";
+import toast from 'react-hot-toast';
 import { getUserRole } from '../utils/auth';
 import './Auth.css';
 
@@ -34,10 +35,10 @@ const Login = () => {
             setIsLoggedIn(true);
             setRole(getUserRole());
 
-            alert("Login successful!");
+            toast.success("Login successful!");
             navigate('/');
         } catch (err) {
-            alert("Login failed: " + (err.response?.data?.message || "Server error"));
+            toast.error("Login failed: " + (err.response?.data?.message || "Server error"));
         }
     };
 

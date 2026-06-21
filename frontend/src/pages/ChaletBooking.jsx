@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { isTokenValid } from '../utils/auth';
 
 const ChaletBooking = () => {
@@ -47,19 +48,19 @@ const ChaletBooking = () => {
         const today = getTodayDate();
 
         if (booking.check_in_date < today) {
-            alert('Check-in date cannot be in the past');
+            toast.error('Check-in date cannot be in the past');
             return;
         }
 
         if (booking.check_out_date <= booking.check_in_date) {
-            alert('Check-out date must be after check-in date');
+            toast.error('Check-out date must be after check-in date');
             return;
         }
 
         const token = localStorage.getItem('token');
 
         if (!token || !isTokenValid()) {
-            alert('Please login before booking');
+            toast.error('Please login before booking');
             navigate('/login');
             return;
         }
@@ -79,10 +80,10 @@ const ChaletBooking = () => {
                 }
             );
 
-            alert(response.data.message || 'Chalet booking successful!');
+            toast.success(response.data.message || 'Chalet booking successful!');
             navigate('/chalets');
         } catch (err) {
-            alert(err.response?.data?.message || 'Booking failed');
+            toast.error(err.response?.data?.message || 'Booking failed');
         }
     };
 

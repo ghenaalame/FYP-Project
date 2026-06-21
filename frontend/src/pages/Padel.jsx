@@ -53,14 +53,13 @@ const Padel = () => {
             <section style={heroStyle}>
                 <p style={labelStyle}>Padel Reservations</p>
 
-                <h1 style={titleStyle}>
-                    Choose Your Padel Court
-                </h1>
+                <h1 style={titleStyle}>Choose Your Padel Court</h1>
 
                 <p style={subtitleStyle}>
                     Browse available courts, view details, check unavailable time slots,
                     and reserve your preferred court easily.
                 </p>
+
 
                 <button
                     onClick={() => setShowMenu(!showMenu)}
@@ -73,11 +72,11 @@ const Padel = () => {
             {showMenu && (
                 <section style={menuSectionStyle}>
                     <div style={menuHeaderStyle}>
-                        <h2 style={{ marginBottom: '8px', color: '#92400e' }}>
+                        <h2 style={{ marginBottom: '8px', color: '#065f46' }}>
                             ☕ Padel Café Menu
                         </h2>
 
-                        <p style={{ color: '#78350f', margin: 0 }}>
+                        <p style={{ color: '#047857', margin: 0 }}>
                             Refreshments, snacks, and protein options are available at the café counter.
                         </p>
                     </div>
@@ -115,13 +114,12 @@ const Padel = () => {
                                 {court.name}
                             </h3>
 
-                            <p style={infoStyle}>
-                                📍 {court.location}
-                            </p>
+                            <p style={infoStyle}>📍 {court.location}</p>
 
-                            <p style={priceStyle}>
-                                ${court.price_per_hour} / hour
-                            </p>
+                            <div style={pricingMiniBoxStyle}>
+                                <p style={miniPriceStyle}>☀️ $15/hr before 5 PM</p>
+                                <p style={miniPriceStyle}>🌙 $30/hr after 5 PM</p>
+                            </div>
 
                             <button
                                 onClick={() => navigate(`/padel/${court.id}`)}
@@ -179,6 +177,25 @@ const subtitleStyle = {
     margin: '0 auto 20px auto'
 };
 
+const pricingBoxStyle = {
+    backgroundColor: '#ecfdf5',
+    border: '1px solid #a7f3d0',
+    padding: '15px',
+    borderRadius: '14px',
+    margin: '0 auto 20px auto',
+    maxWidth: '520px',
+    color: '#065f46',
+    textAlign: 'left'
+};
+
+const pricingRowStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '12px',
+    marginBottom: '8px',
+    fontSize: '15px'
+};
+
 const menuButtonStyle = {
     padding: '12px 20px',
     backgroundColor: '#111827',
@@ -226,7 +243,7 @@ const menuItemStyle = {
     borderBottom: '1px dashed #86efac',
     color: '#374151',
     fontSize: '15px'
-};;
+};
 
 const gridStyle = {
     display: 'grid',
@@ -273,14 +290,22 @@ const courtNameStyle = {
 
 const infoStyle = {
     color: '#6b7280',
-    marginBottom: '8px'
+    marginBottom: '12px'
 };
 
-const priceStyle = {
+const pricingMiniBoxStyle = {
+    backgroundColor: '#ecfdf5',
+    padding: '10px',
+    borderRadius: '10px',
+    marginBottom: '15px',
+    border: '1px solid #a7f3d0'
+};
+
+const miniPriceStyle = {
+    margin: '4px 0',
+    color: '#065f46',
     fontWeight: 'bold',
-    color: '#0f766e',
-    fontSize: '18px',
-    marginBottom: '18px'
+    fontSize: '14px'
 };
 
 const buttonStyle = {

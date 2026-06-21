@@ -25,79 +25,84 @@ app.use('/api/admin', adminRoutes);
 const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send('API running');
+    res.send('API running');
 });
 
 app.get('/test-db', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT NOW()');
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).send('Database error');
-  }
+    try {
+        const result = await pool.query('SELECT NOW()');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).send('Database error');
+    }
 });
 
 app.post('/api/register', async (req, res) => {
-  const { name, email, password } = req.body;
+    const { name, email, phone, password } = req.body;
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    try {
+        if (!name || !email || !phone || !password) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
 
-    const newUser = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-      [name, email, hashedPassword]
-    );
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-    res.status(201).json({
-      message: 'User registered successfully',
-      user: newUser.rows[0]
-    });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ message: 'Registration failed' });
-  }
+        const newUser = await pool.query(
+            `INSERT INTO users (name, email, phone, password)
+             VALUES ($1, $2, $3, $4)
+             RETURNING id, name, email, phone, role, created_at`,
+            [name, email, phone, hashedPassword]
+        );
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            user: newUser.rows[0]
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: 'Registration failed' });
+    }
 });
 
 app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
+    const { email, password } = req.body;
 
-  try {
-    const user = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
-    );
+    try {
+        const user = await pool.query(
+            'SELECT * FROM users WHERE email = $1',
+            [email]
+        );
 
-    if (user.rows.length === 0) {
-      return res.status(400).json({ message: 'User not found' });
+        if (user.rows.length === 0) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        const validPassword = await bcrypt.compare(password, user.rows[0].password);
+
+        if (!validPassword) {
+            return res.status(400).json({ message: 'Wrong password' });
+        }
+
+        const token = jwt.sign(
+            {
+                id: user.rows[0].id,
+                role: user.rows[0].role
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.json({
+            message: 'Login successful',
+            token
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Login failed' });
     }
-
-    const validPassword = await bcrypt.compare(password, user.rows[0].password);
-
-    if (!validPassword) {
-      return res.status(400).json({ message: 'Wrong password' });
-    }
-
-    const token = jwt.sign(
-      {
-        id: user.rows[0].id,
-        role: user.rows[0].role
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    res.json({
-      message: 'Login successful',
-      token
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Login failed' });
-  }
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on http://localhost:${port}`);
 });
-
 

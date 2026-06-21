@@ -17,6 +17,7 @@ router.get('/padel-bookings', auth, admin, async (req, res) => {
                 pb.created_at,
                 u.name AS user_name,
                 u.email AS user_email,
+                u.phone AS user_phone,
                 pc.name AS court_name,
                 pc.location AS court_location
              FROM padel_bookings pb
@@ -46,6 +47,7 @@ router.get('/chalet-bookings', auth, admin, async (req, res) => {
                 cb.created_at,
                 u.name AS user_name,
                 u.email AS user_email,
+                u.phone AS user_phone,
                 c.name AS chalet_name,
                 c.location AS chalet_location,
                 c.chalet_type
@@ -59,6 +61,60 @@ router.get('/chalet-bookings', auth, admin, async (req, res) => {
     } catch (err) {
         console.error('ADMIN CHALET BOOKINGS ERROR:', err);
         res.status(500).json({ message: 'Server error fetching chalet bookings' });
+    }
+});
+
+// Admin cancel any padel booking
+router.put('/padel-bookings/:id/cancel', auth, admin, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `UPDATE padel_bookings
+             SET status = 'cancelled'
+             WHERE id = $1
+             RETURNING *`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Padel booking not found' });
+        }
+
+        res.json({
+            message: 'Padel booking cancelled by admin',
+            booking: result.rows[0]
+        });
+    } catch (err) {
+        console.error('ADMIN CANCEL PADEL ERROR:', err);
+        res.status(500).json({ message: 'Server error cancelling padel booking' });
+    }
+});
+
+// Admin cancel any chalet booking
+router.put('/chalet-bookings/:id/cancel', auth, admin, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `UPDATE chalet_bookings
+             SET status = 'cancelled'
+             WHERE id = $1
+             RETURNING *`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Chalet booking not found' });
+        }
+
+        res.json({
+            message: 'Chalet booking cancelled by admin',
+            booking: result.rows[0]
+        });
+    } catch (err) {
+        console.error('ADMIN CANCEL CHALET ERROR:', err);
+        res.status(500).json({ message: 'Server error cancelling chalet booking' });
     }
 });
 

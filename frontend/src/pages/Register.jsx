@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './Auth.css';
 
 const Register = () => {
     const [user, setUser] = useState({
         name: '',
         email: '',
+        phone: '',
         password: ''
     });
 
@@ -28,12 +30,11 @@ const Register = () => {
                 user
             );
 
-            alert("Success: " + response.data.message);
-            setUser({ name: '', email: '', password: '' });
+            toast.success(response.data.message || 'Registration successful');
+            setUser({ name: '', email: '', phone: '', password: '' });
             navigate('/login');
-
         } catch (err) {
-            alert("Error: " + (err.response?.data?.message || "Server error"));
+            toast.error("Error: " + (err.response?.data?.message || "Server error"));
         }
     };
 
@@ -57,6 +58,15 @@ const Register = () => {
                         type="email"
                         placeholder="Email address"
                         value={user.email}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <input
+                        name="phone"
+                        type="tel"
+                        placeholder="Phone number"
+                        value={user.phone}
                         onChange={handleChange}
                         required
                     />

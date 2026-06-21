@@ -1,5 +1,6 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import toast from 'react-hot-toast';
 import { isTokenValid, getUserRole } from "../utils/auth";
 
 const Layout = () => {
@@ -16,7 +17,7 @@ const Layout = () => {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
         setRole(null);
-        alert('Logged out successfully');
+        toast.success('Logged out successfully');
         navigate('/login');
     };
 

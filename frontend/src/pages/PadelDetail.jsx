@@ -54,12 +54,31 @@ const PadelDetail = () => {
                             <p>{court.location}</p>
                         </div>
 
-                        <div style={infoBoxStyle}>
-                            <strong>💵 Price</strong>
-                            <p>${court.price_per_hour} / hour</p>
-                        </div>
+                        <div style={{ gridColumn: '1 / -1' }}>
+                            <div style={pricingCardStyle}>
+                                <h3 style={pricingTitleStyle}>💰 Pricing</h3>
 
-                    
+                                <div style={priceRowStyle}>
+                                    <div>
+                                        <strong>Day Session</strong>
+                                        <p style={priceTimeStyle}>10:00 AM - 5:00 PM</p>
+                                    </div>
+
+                                    <span style={priceBadgeStyle}>$15/hr</span>
+                                </div>
+
+                                <div style={dividerStyle}></div>
+
+                                <div style={priceRowStyle}>
+                                    <div>
+                                        <strong>Evening Session</strong>
+                                        <p style={priceTimeStyle}>5:00 PM - 10:00 PM</p>
+                                    </div>
+
+                                    <span style={eveningBadgeStyle}>$30/hr</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <button
@@ -92,7 +111,7 @@ const backButtonStyle = {
 };
 
 const cardStyle = {
-    maxWidth: '1000px',
+    maxWidth: '700px',
     margin: '0 auto',
     backgroundColor: 'white',
     borderRadius: '22px',
@@ -103,7 +122,7 @@ const cardStyle = {
 };
 
 const imageWrapperStyle = {
-    minHeight: '380px'
+    minHeight: '180px'
 };
 
 const imageStyle = {
@@ -113,7 +132,7 @@ const imageStyle = {
 };
 
 const contentStyle = {
-    padding: '40px',
+    padding: '18px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center'
@@ -145,7 +164,7 @@ const descriptionStyle = {
 
 const infoGridStyle = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
     gap: '15px',
     marginBottom: '28px'
 };
@@ -155,6 +174,55 @@ const infoBoxStyle = {
     padding: '16px',
     borderRadius: '14px',
     border: '1px solid #e5e7eb'
+};
+
+const pricingCardStyle = {
+    backgroundColor: '#f8fafc',
+    border: '1px solid #e5e7eb',
+    borderRadius: '14px',
+    padding: '18px'
+};
+
+const pricingTitleStyle = {
+    margin: '0 0 15px 0',
+    color: '#111827'
+};
+
+const priceRowStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: '15px'
+};
+
+const priceTimeStyle = {
+    margin: '4px 0 0',
+    color: '#6b7280',
+    fontSize: '14px'
+};
+
+const dividerStyle = {
+    height: '1px',
+    backgroundColor: '#e5e7eb',
+    margin: '15px 0'
+};
+
+const priceBadgeStyle = {
+    backgroundColor: '#dcfce7',
+    color: '#166534',
+    padding: '8px 14px',
+    borderRadius: '999px',
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap'
+};
+
+const eveningBadgeStyle = {
+    backgroundColor: '#dbeafe',
+    color: '#1d4ed8',
+    padding: '8px 14px',
+    borderRadius: '999px',
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap'
 };
 
 const bookButtonStyle = {

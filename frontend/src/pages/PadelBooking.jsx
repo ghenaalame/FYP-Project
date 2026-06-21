@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { isTokenValid } from '../utils/auth';
 
 const PadelBooking = () => {
@@ -53,19 +54,19 @@ const PadelBooking = () => {
         const today = getTodayDate();
 
         if (booking.booking_date < today) {
-            alert('You cannot book a date in the past');
+            toast.error('You cannot book a date in the past');
             return;
         }
 
         if (booking.start_time >= booking.end_time) {
-            alert('End time must be after start time');
+            toast.error('End time must be after start time');
             return;
         }
 
         const token = localStorage.getItem('token');
 
         if (!token || !isTokenValid()) {
-            alert('Please login before booking');
+            toast.error('Please login before booking');
             navigate('/login');
             return;
         }
@@ -86,10 +87,10 @@ const PadelBooking = () => {
                 }
             );
 
-            alert(response.data.message || 'Padel booking successful!');
+            toast.success(response.data.message || 'Padel booking successful!');
             navigate('/padel');
         } catch (err) {
-            alert(err.response?.data?.message || 'Booking failed');
+            toast.error(err.response?.data?.message || 'Booking failed');
         }
     };
 
@@ -161,6 +162,12 @@ const PadelBooking = () => {
                                 style={inputStyle}
                             />
                         </div>
+                    </div>
+
+                    <div style={pricingBoxStyle}>
+                        <strong>💰 Pricing</strong>
+                        <p>☀️ 10:00 AM - 5:00 PM: $15 / hour</p>
+                        <p>🌙 5:00 PM - 10:00 PM: $30 / hour</p>
                     </div>
 
                     <div style={infoBoxStyle}>
@@ -258,6 +265,16 @@ const availableTextStyle = {
 const slotsListStyle = {
     margin: '8px 0 0 18px',
     padding: 0
+};
+
+const pricingBoxStyle = {
+    backgroundColor: '#ecfdf5',
+    color: '#065f46',
+    padding: '14px',
+    borderRadius: '10px',
+    fontSize: '14px',
+    lineHeight: '1.5',
+    border: '1px solid #a7f3d0'
 };
 
 const infoBoxStyle = {

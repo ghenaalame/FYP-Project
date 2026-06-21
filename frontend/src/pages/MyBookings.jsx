@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const MyBookings = () => {
     const [padelBookings, setPadelBookings] = useState([]);
@@ -34,7 +35,7 @@ const MyBookings = () => {
                 setChaletBookings(chaletRes.data);
             } catch (err) {
                 console.error(err);
-                alert('Failed to load bookings');
+                toast.error('Failed to load bookings');
             } finally {
                 setLoading(false);
             }
@@ -61,16 +62,12 @@ const MyBookings = () => {
             );
 
             setPadelBookings(prev =>
-                prev.map(booking =>
-                    booking.id === bookingId
-                        ? { ...booking, status: 'cancelled' }
-                        : booking
-                )
+                prev.filter(booking => booking.id !== bookingId)
             );
 
-            alert('Padel booking cancelled successfully');
+            toast.success('Padel booking cancelled successfully');
         } catch (err) {
-            alert(err.response?.data?.message || 'Failed to cancel padel booking');
+            toast.error(err.response?.data?.message || 'Failed to cancel padel booking');
         }
     };
 
@@ -92,16 +89,12 @@ const MyBookings = () => {
             );
 
             setChaletBookings(prev =>
-                prev.map(booking =>
-                    booking.id === bookingId
-                        ? { ...booking, status: 'cancelled' }
-                        : booking
-                )
+                prev.filter(booking => booking.id !== bookingId)
             );
 
-            alert('Chalet booking cancelled successfully');
+            toast.success('Chalet booking cancelled successfully');
         } catch (err) {
-            alert(err.response?.data?.message || 'Failed to cancel chalet booking');
+            toast.error(err.response?.data?.message || 'Failed to cancel chalet booking');
         }
     };
 
@@ -129,10 +122,10 @@ const MyBookings = () => {
             <h1 style={titleStyle}>My Bookings</h1>
 
             <section style={sectionStyle}>
-                <h2>🎾 Padel Bookings</h2>
+                <h2>🎾 Upcoming Padel Bookings</h2>
 
                 {padelBookings.length === 0 ? (
-                    <p style={emptyStyle}>No padel bookings yet.</p>
+                    <p style={emptyStyle}>No active padel bookings.</p>
                 ) : (
                     <div style={gridStyle}>
                         {padelBookings.map(booking => (
@@ -143,18 +136,16 @@ const MyBookings = () => {
                                 <p><strong>Time:</strong> {booking.start_time} - {booking.end_time}</p>
                                 <p><strong>Total:</strong> ${booking.total_price}</p>
 
-                                <span style={getStatusStyle(booking.status)}>
+                                <span style={statusStyle}>
                                     {booking.status}
                                 </span>
 
-                                {booking.status === 'confirmed' && (
-                                    <button
-                                        onClick={() => cancelPadelBooking(booking.id)}
-                                        style={cancelButtonStyle}
-                                    >
-                                        Cancel Booking
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => cancelPadelBooking(booking.id)}
+                                    style={cancelButtonStyle}
+                                >
+                                    Cancel Booking
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -162,10 +153,10 @@ const MyBookings = () => {
             </section>
 
             <section style={sectionStyle}>
-                <h2>🏡 Chalet Bookings</h2>
+                <h2>🏡 Upcoming Chalet Bookings</h2>
 
                 {chaletBookings.length === 0 ? (
-                    <p style={emptyStyle}>No chalet bookings yet.</p>
+                    <p style={emptyStyle}>No active chalet bookings.</p>
                 ) : (
                     <div style={gridStyle}>
                         {chaletBookings.map(booking => (
@@ -178,18 +169,16 @@ const MyBookings = () => {
                                 <p><strong>Nights:</strong> {booking.total_nights}</p>
                                 <p><strong>Total:</strong> ${booking.total_price}</p>
 
-                                <span style={getStatusStyle(booking.status)}>
+                                <span style={statusStyle}>
                                     {booking.status}
                                 </span>
 
-                                {booking.status === 'confirmed' && (
-                                    <button
-                                        onClick={() => cancelChaletBooking(booking.id)}
-                                        style={cancelButtonStyle}
-                                    >
-                                        Cancel Booking
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => cancelChaletBooking(booking.id)}
+                                    style={cancelButtonStyle}
+                                >
+                                    Cancel Booking
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -201,18 +190,6 @@ const MyBookings = () => {
 
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
-};
-
-const getStatusStyle = (status) => {
-    if (status === 'cancelled') {
-        return {
-            ...statusStyle,
-            backgroundColor: '#fee2e2',
-            color: '#991b1b'
-        };
-    }
-
-    return statusStyle;
 };
 
 const pageStyle = {

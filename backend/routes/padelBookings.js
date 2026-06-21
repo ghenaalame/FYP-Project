@@ -2,7 +2,7 @@ const router = require('express').Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
-// GET logged-in user's padel bookings
+// GET logged-in user's active/upcoming padel bookings
 router.get('/my-bookings', auth, async (req, res) => {
     try {
         const user_id = req.user.id;
@@ -20,7 +20,15 @@ router.get('/my-bookings', auth, async (req, res) => {
              FROM padel_bookings pb
              JOIN padel_courts pc ON pb.court_id = pc.id
              WHERE pb.user_id = $1
-             ORDER BY pb.booking_date DESC, pb.start_time DESC`,
+             AND pb.status = 'confirmed'
+             AND (
+                pb.booking_date > CURRENT_DATE
+                OR (
+                    pb.booking_date = CURRENT_DATE 
+                    AND pb.end_time > CURRENT_TIME
+                )
+             )
+             ORDER BY pb.booking_date ASC, pb.start_time ASC`,
             [user_id]
         );
 
@@ -67,6 +75,13 @@ router.post('/', auth, async (req, res) => {
             return res.status(400).json({ message: 'End time must be after start time' });
         }
 
+        // Padel working hours: 10:00 → 22:00
+        if (start_time < '10:00' || end_time > '22:00') {
+            return res.status(400).json({
+                message: 'Padel bookings are only available from 10:00 to 22:00'
+            });
+        }
+
         const courtResult = await pool.query(
             'SELECT * FROM padel_courts WHERE id = $1',
             [court_id]
@@ -75,8 +90,6 @@ router.post('/', auth, async (req, res) => {
         if (courtResult.rows.length === 0) {
             return res.status(404).json({ message: 'Court not found' });
         }
-
-        const court = courtResult.rows[0];
 
         const conflict = await pool.query(
             `SELECT * FROM padel_bookings
@@ -98,7 +111,19 @@ router.post('/', auth, async (req, res) => {
         const end = new Date(`2000-01-01T${end_time}`);
         const durationHours = (end - start) / (1000 * 60 * 60);
 
-        const total_price = durationHours * Number(court.price_per_hour);
+        let hourlyRate;
+
+        if (start_time >= '10:00' && start_time < '17:00') {
+            hourlyRate = 15;
+        } else if (start_time >= '17:00' && start_time < '22:00') {
+            hourlyRate = 30;
+        } else {
+            return res.status(400).json({
+                message: 'Invalid booking time'
+            });
+        }
+
+        const total_price = durationHours * hourlyRate;
 
         const newBooking = await pool.query(
             `INSERT INTO padel_bookings
@@ -109,7 +134,7 @@ router.post('/', auth, async (req, res) => {
         );
 
         res.status(201).json({
-            message: 'Padel booking created successfully',
+            message: `Padel booking created successfully. Total price: $${total_price}`,
             booking: newBooking.rows[0]
         });
 
