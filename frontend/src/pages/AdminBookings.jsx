@@ -116,8 +116,12 @@ const AdminBookings = () => {
     const totalBookings = totalPadelBookings + totalChaletBookings;
 
     const totalRevenue =
-        padelBookings.reduce((sum, booking) => sum + Number(booking.total_price), 0) +
-        chaletBookings.reduce((sum, booking) => sum + Number(booking.total_price), 0);
+    padelBookings
+        .filter(booking => booking.status === 'confirmed')
+        .reduce((sum, booking) => sum + Number(booking.total_price), 0) +
+    chaletBookings
+        .filter(booking => booking.status === 'confirmed')
+        .reduce((sum, booking) => sum + Number(booking.total_price), 0);
 
     const activeBookings =
         padelBookings.filter(booking => booking.status === 'confirmed').length +
